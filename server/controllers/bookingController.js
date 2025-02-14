@@ -32,3 +32,14 @@ export const createBooking = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+// Get all bookings
+export const getAllBookings = async (req, res) => {
+    try {
+      const bookings = await prisma.booking.findMany();
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
