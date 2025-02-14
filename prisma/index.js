@@ -1,5 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+// prisma/index.js
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-module.exports = prisma;
+export default prisma;

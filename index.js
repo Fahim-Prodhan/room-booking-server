@@ -6,6 +6,9 @@ import bodyParser from 'body-parser';
 dotenv.config();
 
 
+import roomRoutes from "./server/routes/roomRoutes.js"; 
+
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -34,6 +37,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Root route
+app.use("/api/rooms", roomRoutes); 
+
 app.get('/', (req, res) => {
   res.send('Hello to online API');
 });
