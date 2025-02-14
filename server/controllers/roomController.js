@@ -1,5 +1,4 @@
-// server/controllers/roomController.js
-import prisma from "../../prisma/index.js";  // Import Prisma client
+import prisma from "../../prisma/index.js";  
 
 // Create a new room
 export const createRoom = async (req, res) => {

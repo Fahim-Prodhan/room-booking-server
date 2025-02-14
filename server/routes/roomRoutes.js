@@ -6,7 +6,7 @@ import {
 
 
  
-} from "../controllers/roomController.js";  // Import the controller methods
+} from "../controllers/roomController.js"; 
 
 const router = express.Router();
 

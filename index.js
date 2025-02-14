@@ -7,6 +7,7 @@ dotenv.config();
 
 
 import roomRoutes from "./server/routes/roomRoutes.js"; 
+import bookingRoutes from "./server/routes/bookingRoutes.js";
 
 
 const app = express();
@@ -38,6 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Root route
 app.use("/api/rooms", roomRoutes); 
+app.use("/api/bookings", bookingRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello to online API');
