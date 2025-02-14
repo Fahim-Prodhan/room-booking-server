@@ -21,5 +21,16 @@ export const createRoom = async (req, res) => {
   }
 };
 
+// Get all rooms
+export const getAllRooms = async (req, res) => {
+  try {
+    const rooms = await prisma.room.findMany();
+    res.json(rooms);
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 
