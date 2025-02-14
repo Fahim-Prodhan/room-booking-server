@@ -4,6 +4,7 @@ import {
   createRoom,
   getAllRooms,
   deleteRoom,
+  updateRoom,
 
 } from "../controllers/roomController.js";  // Import the controller methods
 
@@ -13,6 +14,7 @@ const router = express.Router();
 router.post("/", createRoom);
 router.get("/", getAllRooms);
 router.delete("/:id", deleteRoom);
+router.put("/:id", updateRoom);
 
 
 
