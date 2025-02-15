@@ -80,7 +80,7 @@ export const getUserBookings = async (req, res) => {
             where: { userId },
             include: {
                 room: {
-                    select: { name: true }, // Only fetch room name
+                    select: { name: true },
                 },
             },
             orderBy: { startTime: "asc" },
@@ -197,5 +197,6 @@ export const deleteBooking = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 
 

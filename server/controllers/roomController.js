@@ -216,6 +216,28 @@ export const getRoomById = async (req, res) => {
   }
 };
 
+export const getFavoriteRooms = async (req, res) => {
+  try {
+      const { roomIds } = req.body; 
+
+      if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0) {
+          return res.status(400).json({ error: "Room IDs are required as an array!" });
+      }
+
+      const rooms = await prisma.room.findMany({
+          where: { id: { in: roomIds } },
+      });
+
+      if (rooms.length === 0) {
+          return res.status(404).json({ error: "No rooms found!" });
+      }
+
+      res.status(200).json(rooms);
+  } catch (error) {
+      console.error("Error fetching favorite rooms:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
 

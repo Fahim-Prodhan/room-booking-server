@@ -6,9 +6,10 @@ import {
   deleteRoom,
   updateRoom,
   getRoomAvailability,
-  getRoomById
+  getRoomById,
+  getFavoriteRooms
 
-} from "../controllers/roomController.js";  // Import the controller methods
+} from "../controllers/roomController.js";  
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.delete("/:id", deleteRoom);
 router.put("/:id", updateRoom);
 router.get("/availability", getRoomAvailability);
 router.get("/:id", getRoomById);
+router.post("/favorites", getFavoriteRooms);
 
 
 
