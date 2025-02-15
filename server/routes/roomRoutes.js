@@ -5,6 +5,8 @@ import {
   getAllRooms,
   deleteRoom,
   updateRoom,
+  getRoomAvailability,
+  getRoomById
 
 } from "../controllers/roomController.js";  // Import the controller methods
 
@@ -15,6 +17,8 @@ router.post("/", createRoom);
 router.get("/", getAllRooms);
 router.delete("/:id", deleteRoom);
 router.put("/:id", updateRoom);
+router.get("/availability", getRoomAvailability);
+router.get("/:id", getRoomById);
 
 
 

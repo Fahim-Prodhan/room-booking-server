@@ -1,7 +1,7 @@
 import express from "express";
 import {
   createBooking,
-  getAllBookings
+  getAllBookings,
 } from "../controllers/bookingController.js";
 
 const router = express.Router();
