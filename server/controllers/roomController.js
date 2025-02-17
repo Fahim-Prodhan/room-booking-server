@@ -23,25 +23,108 @@ export const createRoom = async (req, res) => {
 };
 
 // Get all rooms with pagination
+// export const getAllRooms = async (req, res) => {
+//   try {
+
+//     // Extract query parameters for pagination
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const skip = (page - 1) * limit;
+//     const text = req.query.search || '';
+//     const capacity = parseInt(req.query.capacity) || 0;
+
+//     let rangeStart;
+//     let rangeEnd;
+
+//     if(capacity == 0){
+//       rangeStart=0;
+//       rangeEnd=10000;
+//     }else{
+//       rangeStart=capacity;
+//       rangeEnd=capacity+10;
+//     }
+
+//     // Fetch rooms with pagination
+//     const rooms = await prisma.room.findMany({
+//       include: {
+//         bookings: true,
+//       },
+//       skip: skip,
+//       take: limit,
+//     });
+
+//     // Get the total number of rooms for pagination metadata
+//     const totalRooms = await prisma.room.count();
+
+//     // Calculate total pages
+//     const totalPages = Math.ceil(totalRooms / limit);
+
+//     // Send response with rooms and pagination metadata
+//     res.json({
+//       success: true,
+//       data: rooms,
+//       pagination: {
+//         page,
+//         limit,
+//         totalRooms,
+//         totalPages,
+//         currentPage:parseInt(page)
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error fetching rooms:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+
+// Get all rooms with pagination and filtering
 export const getAllRooms = async (req, res) => {
   try {
-
     // Extract query parameters for pagination
-    const page = parseInt(req.query.page) || 1;
+    let page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const text = req.query.search || '';
+    const capacity = parseInt(req.query.capacity) || 0;
 
-    // Fetch rooms with pagination
-    const rooms = await prisma.room.findMany({
-      include: {
-        bookings: true,
+
+    // Determine capacity range
+    let rangeStart = capacity === 0 ? 0 : capacity;
+    let rangeEnd = capacity === 0 ? 10000 : capacity + 10;
+
+    // Build filter conditions
+    const filters = {
+      capacity: {
+        gte: rangeStart,
+        lte: rangeEnd,
       },
+    };
+
+    // If search text is provided, filter by name, description, or amenities
+    if (text.trim()) {
+      filters.OR = [
+        { name: { contains: text, mode: "insensitive" } },
+        { amenities: { has: text } },
+      ];
+    }
+
+    // Get total number of matching rooms (without pagination)
+    const totalRooms = await prisma.room.count({ where: filters });
+
+    // Reset page to 1 if a filter is applied
+    if (text.trim() || capacity > 0) {
+      page = 1;
+    }
+
+    const skip = (page - 1) * limit; // Recalculate skip after potential reset
+
+    // Fetch rooms with filters, pagination, and including bookings
+    const rooms = await prisma.room.findMany({
+      where: filters,
+      include: { bookings: true },
       skip: skip,
       take: limit,
     });
-
-    // Get the total number of rooms for pagination metadata
-    const totalRooms = await prisma.room.count();
 
     // Calculate total pages
     const totalPages = Math.ceil(totalRooms / limit);
@@ -55,6 +138,7 @@ export const getAllRooms = async (req, res) => {
         limit,
         totalRooms,
         totalPages,
+        currentPage: page,
       },
     });
   } catch (error) {
@@ -62,6 +146,7 @@ export const getAllRooms = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 export const deleteRoom = async (req, res) => {
@@ -239,5 +324,27 @@ export const getFavoriteRooms = async (req, res) => {
   }
 };
 
+// Get unique amenities
+export const getUniqueAmenities = async (req, res) => {
+  try {
+    // Fetch all rooms and only include the amenities
+    const rooms = await prisma.room.findMany({
+      select: {
+        amenities: true,  // Select only the amenities field
+      },
+    });
 
+    // Flatten the array of amenities
+    const allAmenities = rooms.flatMap(room => room.amenities);
+
+    // Extract unique amenities
+    const uniqueAmenities = [...new Set(allAmenities)];
+
+    // Return unique amenities
+    res.json({ success: true, uniqueAmenities });
+  } catch (error) {
+    console.error("Error fetching unique amenities:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 

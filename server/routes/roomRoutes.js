@@ -7,7 +7,8 @@ import {
   updateRoom,
   getRoomAvailability,
   getRoomById,
-  getFavoriteRooms
+  getFavoriteRooms,
+  getUniqueAmenities
 
 } from "../controllers/roomController.js";  
 
@@ -18,11 +19,10 @@ router.post("/", createRoom);
 router.get("/", getAllRooms);
 router.delete("/:id", deleteRoom);
 router.put("/:id", updateRoom);
-router.get("/availability", getRoomAvailability);
-router.get("/:id", getRoomById);
+router.get("/room", getRoomAvailability);
+router.get("/get-single-room/:id", getRoomById);
 router.post("/favorites", getFavoriteRooms);
-
-
+router.get("/amenities", getUniqueAmenities);
 
 
 export default router;

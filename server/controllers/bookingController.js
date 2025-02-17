@@ -51,12 +51,32 @@ export const createBooking = async (req, res) => {
 
 // Get all bookings
 export const getAllBookings = async (req, res) => {
+
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 10;
+
     try {
-        const bookings = await prisma.booking.findMany();
-        res.json(bookings);
+
+        const totalBookings = await prisma.booking.count();
+
+        const bookings = await prisma.booking.findMany({
+            include: {
+                room: {
+                    select: { name: true },
+                },
+            },
+            orderBy: { startTime: "asc" },
+            skip: ((page - 1) * size),
+            take: size,
+        });
+
+        const totalPages = Math.ceil(totalBookings / size);
+
+        return res.status(200).json({ bookings, totalBookings, currentPage: parseInt(page), totalPages });
+
     } catch (error) {
-        console.error("Error fetching bookings:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error fetching user bookings:", error);
+        return res.status(500).json({ error: "Something went wrong" });
     }
 };
 
@@ -73,7 +93,7 @@ export const getUserBookings = async (req, res) => {
         }
 
         const totalBookings = await prisma.booking.count({
-            where: { userId:userId }
+            where: { userId: userId }
         });
 
         const bookings = await prisma.booking.findMany({
@@ -84,13 +104,13 @@ export const getUserBookings = async (req, res) => {
                 },
             },
             orderBy: { startTime: "asc" },
-            skip: ((page-1)*size),
+            skip: ((page - 1) * size),
             take: size,
         });
 
         const totalPages = Math.ceil(totalBookings / size);
 
-        return res.status(200).json({bookings,totalBookings,currentPage:parseInt(page), totalPages});
+        return res.status(200).json({ bookings, totalBookings, currentPage: parseInt(page), totalPages });
 
     } catch (error) {
         console.error("Error fetching user bookings:", error);
@@ -197,6 +217,3 @@ export const deleteBooking = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
-
-
-
